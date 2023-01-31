@@ -1,13 +1,17 @@
 import { Database } from './database.js';
 import { randomUUID } from 'node:crypto';
+import { buildRoutePath } from './utils/build-route-path.js';
 
 const database = new Database();
 
 export const routes = [
     {
         method: 'GET',
-        path: '/users',
+        path: buildRoutePath('/users'),
         handler: (req, res) => {
+
+            console.log(req.query)
+
             const users = database.select('users')
 
             return res
@@ -17,11 +21,11 @@ export const routes = [
     },
     {
         method: 'POST',
-        path: '/users',
+        path: buildRoutePath('/users'),
         handler: (req, res) => {
             const {name, email} = req.body;
 
-            users = {
+            const users = {
                 id: randomUUID(),
                 name: name,
                 email: email
@@ -35,14 +39,34 @@ export const routes = [
         }
     },
     {
-        method: 'DELETE',
-        path: '/users/:id',
+        method: 'PUT',
+        path: buildRoutePath('/users/:id'),
         handler: (req, res) => {
-            const users = database.select('users')
+            const { id}  = req.params
+            const {name, email} = req.body
+
+            database.update('users', id, {
+                name,
+                email
+            })
 
             return res
                     .writeHead(200)
-                    .end(JSON.stringify(users));            
+                    .end();            
         }
-    },        
+    },    
+    {
+        method: 'DELETE',
+        path: buildRoutePath('/users/:id'),
+        handler: (req, res) => {
+
+            const { id}  = req.params
+
+            database.delete('users', id)
+
+            return res
+                    .writeHead(204)
+                    .end();            
+        }
+    }     
 ]
