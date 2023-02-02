@@ -10,9 +10,7 @@ export const routes = [
         path: buildRoutePath('/users'),
         handler: (req, res) => {
 
-            console.log(req.query)
-
-            const users = database.select('users')
+            const users = database.select('users', req.query)
 
             return res
                     .writeHead(200)
